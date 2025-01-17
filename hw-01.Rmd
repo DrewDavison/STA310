@@ -59,7 +59,11 @@ Consider the following scenario:
 
 a.  Identify the response and predictor variables.
 
+The response variables are the depression scores. The predictor variable is the use of an estrogen patch. 
+
 b.  Identify which model assumption(s) are violated. Briefly explain your choice.
+
+The assumption of Independence is violated. Depression scores are measured repeatedly over six visits for each patient, meaning the scores will be correlated to each patient.
 
 ## Exercise 3
 
