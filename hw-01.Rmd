@@ -33,9 +33,21 @@ Consider the following scenario:
 
 a.  Identify the response and predictor variable.
 
+The temperature is the predictor variable. The number of cricket chirps per minute is the response variable.
+
 b.  Write the complete specification of the statistical model.
 
+$\text{Temperature}$ = $\beta_0$ + $\beta_1$ $\cdot$ $\text{Chirps per Minute}$ + $\epsilon$
+
 c.  Write the assumptions for linear regression in the context of the problem.
+
+Linearity: There is a linear relationship between the number of chirps per minute and temperature is linear.
+
+Independence: The residuals of chirps and corresponding temperatures are independent of each other. There is no connection between how far any two points lie above or below the regression line.
+
+Normality: The number of chirps per minute follows a normal distribution at each level of the temperature.
+
+Equal Variance: The variability of the number of chirps per minute is equal for all levels of the temperature.
 
 ## Exercise 2
 
