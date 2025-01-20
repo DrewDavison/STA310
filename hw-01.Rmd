@@ -175,7 +175,54 @@ The data set is located in `college-data.csv` in the `data` folder. We will focu
 | out_of_state_total | double    | Total cost for in-state residents in USD (sum of room & board + out of state tuition) |
 
 a.  Visualize the distribution of the response variable `early_career_pay`. Write 1 - 2 observations from the plot.
+
+
+```{r message=FALSE, warning=FALSE}
+collegepay <- read_csv("~/STA310/college-data.csv")
+
+ ggplot(data = collegepay, aes(x = early_career_pay)) +
+    geom_histogram() +
+      labs(x = "Median salary for alumni with 0 - 5 years experience ($)",
+         y = "Count",
+         title = "Median Salary Distribution")
+ 
+ collegepay |>
+    skim(early_career_pay) |>
+    select(-skim_type, -skim_variable, -complete_rate,
+           - numeric.hist) |> 
+    print(width = Inf) 
+```
+
+This is a right-skewed distribution with a mean income of $50,892.58.
+
 b.  Visualize the relationship between (i) `early_career_pay` and `type` and (ii) `early_career_pay` and `stem_percent`. Write an observation from each plot.
+
+```{r}
+
+ggplot(data = collegepay, aes(x = type, y = early_career_pay)) +
+  geom_boxplot() +
+  labs(title = "Early Career Pay by School Type", 
+       x = "School Type", 
+       y = "Early Career Pay (USD)") +
+  theme_minimal()
+
+```
+
+The median early career pay for private schools is slightly greater than public schools, while the range and variability is also greater for private schools.
+
+```{r}
+ggplot(data = collegepay, aes(x = stem_percent, y = early_career_pay)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "blue") + 
+  labs(title = "Early Career Pay vs STEM Percent", 
+       x = "STEM Percent (%)", 
+       y = "Early Career Pay (USD)") +
+  theme_minimal()
+
+```
+
+As the percentage of degrees rewarded in the STEM fields increases, the early career pay increases, on average.
+
 c.  Below is the specification of the statistical model for this analysis. Fit the model and neatly display the results using 3 digits. Display the 95% confidence interval for the coefficients.
 
 
@@ -184,10 +231,40 @@ early\_career\_pay_{i} = \beta_0 &+ \beta_1~out\_of\_state\_total_{i} + \beta_2 
 &+ \beta_3 ~ stem\_percent_{i} + \beta_4 ~ type * stem\_percent_{i} \\ &+ \epsilon_{i}, \hspace{5mm} \text{where } \epsilon_i \sim N(0, \sigma^2)
 \end{align}
 
+```{r}
+library(broom)
+
+model <- lm(early_career_pay ~ out_of_state_total + type + stem_percent + type:stem_percent, data = collegepay)
+
+model_results <- tidy(model, conf.int = TRUE, conf.level = 0.95)
+
+model_results$estimate <- round(model_results$estimate, 3)
+model_results$std.error <- round(model_results$std.error, 3)
+model_results$statistic <- round(model_results$statistic, 3)
+model_results$p.value <- round(model_results$p.value, 3)
+model_results$conf.low <- round(model_results$conf.low, 3)
+model_results$conf.high <- round(model_results$conf.high, 3)
+
+print(model_results)
+
+```
 
 
 d.  How many degrees of freedom are there in the estimate of the regression standard error $\sigma$?
+
+The degrees of freedom can be solved by subtracting the number of parameters in the model by the number of observations in the data. In this case, there are 5 parameters and 593 observations, so there are 588 degrees of freedom.
+
 e.  What is the 95% confidence interval for the amount in which the intercept for public institutions differs from private institutions?
+
+```{r}
+model_results <- tidy(model, conf.int = TRUE, conf.level = 0.95)
+
+type_public_coeff <- model_results[model_results$term == "typePublic", ]
+
+type_public_coeff[c("conf.low", "conf.high")]
+```
+
+[-324.8133, 2694.853] is the 95% confidence interval for the amount in which the intercept for public institutions differs from private institutions.
 
 ## Exercise 6
 
