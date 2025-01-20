@@ -103,7 +103,7 @@ houses <- read_csv("~/STA310/kingCountyHouses.csv")
 
 a.  Fit a linear regression model with `price` as the response variable and `sqft` as the predictor variable (Model 1). Interpret the slope coefficient in terms of the expected change in price when `sqft` increases by 100.
 
-```{r}
+```{r model1}
 model1 <- linear_reg() |>
     set_engine("lm") |>
     fit(price ~ sqft, data = houses) |>
@@ -115,7 +115,7 @@ The expected change in selling price when the square footage increases by 100 sq
 
 b.  Fit Model 2, where `logprice` (the natural log of price) is now the response variable and `sqft` is still the predictor variable. How is the `logprice` expected to change when `sqft` increases by 100?
 
-```{r}
+```{r model2}
 model2 <- linear_reg() |>
   set_engine("lm") |>
   fit(log(price) ~ sqft, data = houses)
@@ -127,7 +127,7 @@ The expected change in 'logprice' when the square footage increases by 100 squar
 
 c.  Recall that $log(a) - log(b) = log(\frac{a}{b})$. Use this to derive how the `price` is expected to change when `sqft` increases by 100 based on Model 2.
 
-```{r}
+```{r percent_change}
 model2_coeff <- tidy(model2)
 sqft_coef <- model2_coeff$estimate[model2_coeff$term == "sqft"]
 sqft_coef
@@ -141,7 +141,7 @@ With the square foot coefficient of .0003987465, we can use the above equation t
 
 d.  Fit Model 3, where `price` and `logsqft` (the natural log of sqft) are the response and predictor variables, respectively. How does the price expected to change when sqft increases by 10%? *As a hint, this is the same as multiplying sqft by 1.10.*
 
-```{r}
+```{r price_change}
 model3 <- linear_reg() |>
   set_engine("lm") |>
   fit(price ~ log(sqft), data = houses)
@@ -177,7 +177,7 @@ The data set is located in `college-data.csv` in the `data` folder. We will focu
 a.  Visualize the distribution of the response variable `early_career_pay`. Write 1 - 2 observations from the plot.
 
 
-```{r message=FALSE, warning=FALSE}
+```{r distribution_1, message=FALSE, warning=FALSE}
 collegepay <- read_csv("~/STA310/college-data.csv")
 
  ggplot(data = collegepay, aes(x = early_career_pay)) +
@@ -197,7 +197,7 @@ This is a right-skewed distribution with a mean income of $50,892.58.
 
 b.  Visualize the relationship between (i) `early_career_pay` and `type` and (ii) `early_career_pay` and `stem_percent`. Write an observation from each plot.
 
-```{r}
+```{r distribution_2}
 
 ggplot(data = collegepay, aes(x = type, y = early_career_pay)) +
   geom_boxplot() +
@@ -210,7 +210,7 @@ ggplot(data = collegepay, aes(x = type, y = early_career_pay)) +
 
 The median early career pay for private schools is slightly greater than public schools, while the range and variability is also greater for private schools.
 
-```{r}
+```{r distribution_3}
 ggplot(data = collegepay, aes(x = stem_percent, y = early_career_pay)) +
   geom_point() +
   geom_smooth(method = "lm", color = "blue") + 
@@ -231,10 +231,11 @@ early\_career\_pay_{i} = \beta_0 &+ \beta_1~out\_of\_state\_total_{i} + \beta_2 
 &+ \beta_3 ~ stem\_percent_{i} + \beta_4 ~ type * stem\_percent_{i} \\ &+ \epsilon_{i}, \hspace{5mm} \text{where } \epsilon_i \sim N(0, \sigma^2)
 \end{align}
 
-```{r}
+```{r model}
 library(broom)
 
-model <- lm(early_career_pay ~ out_of_state_total + type + stem_percent + type:stem_percent, data = collegepay)
+model <- lm(early_career_pay ~ out_of_state_total + type + stem_percent + 
+              type:stem_percent, data = collegepay)
 
 model_results <- tidy(model, conf.int = TRUE, conf.level = 0.95)
 
@@ -256,7 +257,7 @@ The degrees of freedom can be solved by subtracting the number of parameters in 
 
 e.  What is the 95% confidence interval for the amount in which the intercept for public institutions differs from private institutions?
 
-```{r}
+```{r confidence_interval}
 model_results <- tidy(model, conf.int = TRUE, conf.level = 0.95)
 
 type_public_coeff <- model_results[model_results$term == "typePublic", ]
@@ -270,6 +271,7 @@ type_public_coeff[c("conf.low", "conf.high")]
 
 Use the analysis from the previous exercise to write a paragraph (\~ 4 - 5 sentences) describing the differences in early career pay based on the institution characteristics. *The summary should be consistent with the results from the previous exercise, comprehensive, answers the primary analysis question, and tells a cohesive story (e.g., a list of interpretations will not receive full credit).*
 
+It appears that the  variables that indicate a significantly significant characteristic of the colleges and universities are the total cost for in state residents and the percentage of degrees in STEM. These two variables have a 95% confidence interval that do not include 0, while the variable indicating the type of school has a 95% confidence interval that includes 0. As the percentage of STEM degrees and the price of the college increase, the expected early career pay for graduates increases. On the other hand, the difference between a Public and Private school does not provide a statistically significant difference to early career pay.
 
 # Grading
 
