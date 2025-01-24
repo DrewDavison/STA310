@@ -86,6 +86,8 @@ The Poisson distribution could be useful to model this scenario. This distributi
 
 Chapter 1 also asked you to consider a scenario where *"Researchers are attempting to see if socioeconomic status and parental stability are predictive of low birthweight.  They classify a low birthweight as below 2500 g, hence our response is binary: 1 for low birthweight, and 0 when the birthweight is not low."* What distribution might be useful to model if a newborn has low birthweight?
 
+The Bernoulli distribution could be useful to model if a newborn has low birthweight. The response variable is binary (1 for low birthweight, and 0 for not low birthweight), and the Bernoulli distribution is used to model a trial with two possible outcomes. The probability of low birthweight represents the "success" probability.
+
 ## Exercise 8
 
 Chapter 1 also asked you to consider a scenario where *"Researchers are interested in how elephant age affects mating patterns among males.  In particular, do older elephants have greater mating success, and is there an optimal age for mating among males?  Data collected includes, for each elephant, age and number of matings in a given year."* Which distribution would be useful to model the number of matings in a given year for these elephants? Why?
