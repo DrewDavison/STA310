@@ -38,6 +38,20 @@ The function for variance, ($p$)(1-$p$), is a parabola with roots at $p$=0 and $
 
 How are hypergeometric and binomial random variables different? How are they similar?
 
+The random variables are different in many ways. 
+
+Firstly, hypergeometric random variables are sampled without replacement, while binomial random variables are sampled with replacement. 
+
+In hypergeometric cases, the population size $N$ and the number of successes $K$ in the population are explicitly included in the equations to solve the probability. In the binomial case, the population is assumed to be infinite or large enough that the probability of success remains the same in all trials. 
+
+The probability of success changes after each trial in hypergeometric cases, while the probability of success is fixed in binomial cases.
+
+The parameters of a hypergeometric random variable are population size, number of successes in the population, and number of trials. The parameters of a binomial random variable are number of trials and probability of success.
+
+However, on the other hand, there are many similarities between the two random variables.
+
+Both distributions are discrete probability distributions. They both have a range of successes from 0 to $n$, the number of trials. Lastly, both distributions rely on a binary success or failure structure.  
+
 ## Exercise 3
 
 How are exponential and Poisson random variables related?
