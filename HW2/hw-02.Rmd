@@ -80,6 +80,8 @@ A hypergeometric distribution could be helpful to model this scenario. Because s
 
 Chapter 1 asked you to consider a scenario where *"The Minnesota Pollution Control Agency is interested in using traffic volume data to generate predictions of particulate distributions as measured in counts per cubic feet."* What distribution might be useful to model this count per cubic foot? Why?
 
+The Poisson distribution could be useful to model this scenario. This distribution is measured in counts, which fits the type of data modeled by a Poisson distribution. The Poisson distribution is used to model the number of events occurring in a fixed interval of time, space, or volume. Additionally, it is reasonable to assume that the distribution of events is independent. 
+
 ## Exercise 7
 
 Chapter 1 also asked you to consider a scenario where *"Researchers are attempting to see if socioeconomic status and parental stability are predictive of low birthweight.  They classify a low birthweight as below 2500 g, hence our response is binary: 1 for low birthweight, and 0 when the birthweight is not low."* What distribution might be useful to model if a newborn has low birthweight?
