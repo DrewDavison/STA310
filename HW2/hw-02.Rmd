@@ -56,6 +56,8 @@ Both distributions are discrete probability distributions. They both have a rang
 
 How are exponential and Poisson random variables related?
 
+The exponential and Poisson distributions are two distributions in a Poisson process. The exponential random variable models the time between events, while the Poisson random variable models the number of events in a fixed interval. Both are driven by the same rate parameter $\lambda$. An exponential distribution is the continuous random variable related to the Poisson discrete random variable. 
+
 ## Exercise 4 
 
 How are geometric and exponential random variables similar? How are they different?
