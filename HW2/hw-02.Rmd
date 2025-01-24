@@ -1,6 +1,6 @@
 ---
-title: 'Exploring Distributions'
-author: "STA 310: Homework 2"
+title: "Exploring Distributions - STA 310: Homework 2"
+author: "Drew Davison"
 output: pdf_document
 ---
 
@@ -21,6 +21,18 @@ These exercises come from BMLR or are adapted from BMLR, Chapter 3.
 ## Exercise 1
 
 At what value of $p$ is the variance of a binary random variable smallest? When is the variance the largest? Back up your answer empirically or mathematically. 
+
+The equation for variance of a binary random variable is equal to ($p$)(1-$p$). 
+
+Thus, the variance is smallest when $p$ is equal to 0 or 1. At these extremes, there is no variance.
+
+(0)(1-0) = 0 AND (1)(1-1) = 0.
+
+The variance is largest when $p$ is equal to 0.5.
+
+(0.5)(1-0.5) = .25
+
+The function for variance, ($p$)(1-$p$), is a parabola with roots at $p$=0 and $p$=1, with the vertex at $p$=0.5. 
 
 ## Exercise 2 
 
