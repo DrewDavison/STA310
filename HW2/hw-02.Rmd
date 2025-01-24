@@ -112,6 +112,53 @@ c. Repeat (a) and (b) 1,000 times ($i=1,\ldots,1000$).
 d. Plot a histogram of these beta-binomial observations.  
     
 Compare the histograms of the "plain old" binomial and beta-binomial distributions.  How do their shapes, standard deviations, means, possible values, etc. compare?  
+
+```{r betabinomial, message=FALSE, warning=FALSE}
+
+library(tidyverse)
+library(tidymodels)
+library(skimr)
+
+set.seed(123)
+
+binom_obs <- rbinom(1000, size = 10, prob = 0.8)
+
+binom_df <- data.frame(observation = binom_obs, type = "Binomial")
+
+ggplot(data = binom_df, aes(x = observation)) +
+    geom_histogram() +
+      labs(x = "Number of Successes",
+         y = "Frequency",
+         title = "Histogram of Binomial Observations")
+
+beta_binom_obs <- numeric(1000)
+
+for(i in 1:1000) {
+  pi <- rbeta(1, shape1 = 4, shape2 = 1)  
+  beta_binom_obs[i] <- rbinom(1, size = 10, prob = pi)  
+}
+
+beta_binom_df <- data.frame(observation = beta_binom_obs, 
+                            type = "Beta-Binomial")
+
+ ggplot(data = beta_binom_df, aes(x = observation)) +
+    geom_histogram() +
+      labs(x = "Number of Successes",
+         y = "Frequency",
+         title = "Histogram of Beta-Binomial Observations")
+ 
+ combined_df <- rbind(binom_df, beta_binom_df)
+ 
+ summary_stats <- combined_df %>%
+  group_by(type) %>%
+  summarise(
+    mean_value = mean(observation),
+    sd_value = sd(observation)
+  )
+ print(summary_stats)
+```
+
+Both distributions are left-skewed, though the beta-binomial distribution is more left skewed than the binomial distribution. The means for the distributions are very similar, separated by.018, though there is a roughly .684 difference in their standard deviations. The Beta-Binomial distribution has a greater standard deviation. The possible values within the Beta-Binomial distribution has a greater range (1 success to 10 successes), compared to the Binomial distribution, (3 successes to 10 successes).
     
 # Grading
 
