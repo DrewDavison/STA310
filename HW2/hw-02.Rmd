@@ -74,6 +74,8 @@ Exponential: $f_T(t)$ = $\lambda$ e$^{-\lambda t}$
 
 A university's college of sciences is electing a new board of 5 members. There are 35 applicants, 10 of which come from the math department. What distribution could be helpful to model the probability of electing $X$ board members from the math department?
 
+A hypergeometric distribution could be helpful to model this scenario. Because selecting board members occurs without replacement, we are limited to distributions that model scenarios without replacement. The population size is 35, the number of successes in the population is 10, and the sample size is 5. These are the parameters needed for a hypergeometric distribution.
+
 ## Exercise 6
 
 Chapter 1 asked you to consider a scenario where *"The Minnesota Pollution Control Agency is interested in using traffic volume data to generate predictions of particulate distributions as measured in counts per cubic feet."* What distribution might be useful to model this count per cubic foot? Why?
