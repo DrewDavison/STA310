@@ -92,6 +92,8 @@ The Bernoulli distribution could be useful to model if a newborn has low birthwe
 
 Chapter 1 also asked you to consider a scenario where *"Researchers are interested in how elephant age affects mating patterns among males.  In particular, do older elephants have greater mating success, and is there an optimal age for mating among males?  Data collected includes, for each elephant, age and number of matings in a given year."* Which distribution would be useful to model the number of matings in a given year for these elephants? Why?
 
+The Poisson distribution would be useful because the scenario above deals with count data (the number of matings) occurring within a fixed period (one year).
+
 ## Exercise 9
 
 Describe a scenario which could be modeled using a gamma distribution.
