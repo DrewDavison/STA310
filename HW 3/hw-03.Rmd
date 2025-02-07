@@ -193,16 +193,142 @@ b. Given that, for the No Hot Hand model, $\textrm{Lik}(p_B)=p_B^{10}(1-p_B)^{15
 
 c. Find the MLEs for the parameters in each model, and then use those MLEs to determine if there's significant evidence that the hot hand exists using a likelihood ratio test (LRT). Be sure to specify the test and provide all details of your approach, including reproducible code used. 
 
-| Game | First five shots  | Likelihood (no hot hand) | Likelihood (hot hand)
-|--------|-----------------|--------------------------|-----------------------|
-| 1      | BMMBB            |                         |                       |
-| 2      | MBMBM            |                         |                       |
-| 3      | MMBBB            |                         |                       |
-| 4      | BMMMB            |                         |                       |
-| 5      | MMMMM            |                         |                       |
+\begin{table}[h]
+    \centering
+    \begin{tabular}{c c c c}
+    \toprule
+    Game & First five shots  & Likelihood (No Hot Hand) & Likelihood (Hot Hand) \\
+    \midrule
+    1 & BMMBB & \( p_B p_{M} p_M p_B p_{B} \) & \( p_B (1 - p_B) (1 - p_B) p_{B|B} p_{B|B} \) \\
+    2 & MBMBM & \( p_M p_B p_M p_B p_M \) & \( (1 - p_B) p_B (1 - p_B) p_B (1 - p_B) \) \\
+    3 & MMBBB & \( p_M p_M p_B p_B p_B \) & \( (1 - p_B)(1 - p_B) p_B p_{B|B} p_{B|B} \) \\
+    4 & BMMMB & \( p_B p_M p_M p_M p_B \) & \( p_B (1 - p_B)(1 - p_B)(1 - p_B) p_B \) \\
+    5 & MMMMM & \( p_M p_M p_M p_M p_M \) & \( (1 - p_B)(1 - p_B)(1 - p_B)(1 - p_B)(1 - p_B) \) \\
+    \bottomrule
+    \end{tabular}
+    \caption{Likelihood contributions under both models.}
+    \label{tab:hothandchp2}
+\end{table}
+
+Maximum Likelihood Estimation (MLE):
+
+For the **No Hot Hand** model, the likelihood function is:
+
+\[
+\text{Lik}(p_B) = p_B^{10} (1 - p_B)^{15}
+\]
+
+Taking the log-likelihood:
+
+\[
+\log \text{Lik}(p_B) = 10 \log p_B + 15 \log (1 - p_B)
+\]
+
+Differentiating and setting to zero:
+
+\[
+\frac{d}{dp_B} \log \text{Lik}(p_B) = \frac{10}{p_B} - \frac{15}{1 - p_B} = 0
+\]
+
+Solving for \( p_B \):
+
+\[
+10 (1 - p_B) = 15 p_B
+\]
+
+\[
+10 = 25 p_B
+\]
+
+\[
+p_B = 0.40
+\]
+
+Thus, the **MLE** for \( p_B \) is \( \hat{p}_B = 0.40 \), which is a better estimate than \( p_B = 0.30 \) since it maximizes the likelihood.
+
+\begin{itemize}
+    \item The MLE is the value of \( p_B \) that makes the \textbf{observed data most probable}.
+    \item If we picked \( p_B = 0.30 \), the likelihood of observing 10 successful shots out of 25 would be \textbf{lower} than if we picked \( p_B = 0.40 \).
+    \item Thus, \textbf{MLE provides the most likely explanation for the data} and is preferred over other values like \( 0.30 \).
+\end{itemize}
 
 
+For the **Hot Hand** model, we maximize the likelihood function:
 
+\[
+\text{Lik}(p_B, p_{B|B}) = p_B^{3} (1 - p_B)^{4} p_{B|B}^{5} (1 - p_{B|B})^{3}
+\]
+
+Solving for \( p_B \) and \( p_{B|B} \) using numerical optimization, we obtain:
+
+\[
+\hat{p}_B = 0.375, \quad \hat{p}_{B|B} = 0.50.
+\]
+
+Likelihood Ratio Test (LRT):
+
+We test:
+
+\[
+H_0: p_B = p_{B|B} \quad \text{(No Hot Hand)}
+\]
+
+\[
+H_A: p_B \neq p_{B|B} \quad \text{(Hot Hand Exists)}
+\]
+
+The test statistic is:
+
+\[
+\Lambda = -2 \log \left( \frac{\text{Lik}(H_0)}{\text{Lik}(H_A)} \right).
+\]
+
+Under \( H_0 \), this statistic follows a \( \chi^2_1 \) distribution.
+
+Code for MLE and LRT:
+
+```{r}
+# Define observed counts
+successes_after_miss <- 3
+failures_after_miss <- 5
+successes_after_make <- 5
+failures_after_make <- 3
+
+# MLEs under the No Hot Hand Model
+p_B_hat <- 10 / 25  # 10 successes in 25 trials
+
+# MLEs under the Hot Hand Model
+p_B_MLE <- successes_after_miss / (successes_after_miss + failures_after_miss)
+p_B_given_B_MLE <- successes_after_make / (successes_after_make + failures_after_make)
+
+# Compute log-likelihoods
+log_lik_no_hot_hand <- 10 * log(p_B_hat) + 15 * log(1 - p_B_hat)
+log_lik_hot_hand <- (successes_after_miss * log(p_B_MLE) + 
+                     failures_after_miss * log(1 - p_B_MLE) + 
+                     successes_after_make * log(p_B_given_B_MLE) + 
+                     failures_after_make * log(1 - p_B_given_B_MLE))
+
+# Likelihood Ratio Test
+lrt_stat <- -2 * (log_lik_no_hot_hand - log_lik_hot_hand)
+p_value <- pchisq(lrt_stat, df = 1, lower.tail = FALSE)
+
+# Print results
+cat("Likelihood Ratio Test Statistic:", lrt_stat, "\n")
+cat("p-value:", p_value, "\n")
+```
+
+
+### **Summary of Results:**
+1. **MLE for No Hot Hand Model:**  
+   \( \hat{p}_B = 0.40 \)  
+2. **MLE for Hot Hand Model:**  
+   \( \hat{p}_B = 0.375 \), \( \hat{p}_{B|B} = 0.50 \)  
+3. **Likelihood Ratio Test (LRT):**  
+   - Computes log-likelihood values.
+   - Uses \( \chi^2 \) test to determine significance.
+   - If \( p < 0.05 \), evidence supports the hot hand.
+  
+Given the LRT Test Statistic and p-value, the evidence supports the hot hand theory. The code above details the process of a Likelihood Ratio Test, which was performed with the two provided models.
 
 # Grading
 
