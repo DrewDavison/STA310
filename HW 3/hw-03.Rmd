@@ -144,6 +144,41 @@ which is the **sample mean**, and it is indeed a **maximum**.
 
 Verify using a grid-search that your solution matches to the calculus based one, where you may assume for simplicity that $\sum_i x_i = 500.$ You may assume 100 observations. (Hint: show that the approximated MLE is 5.)
 
+```{r}
+# Define given values
+n <- 100   # Number of observations
+sum_x <- 500  # Given sum of x_i
+x_bar <- sum_x / n  # Theoretical MLE (should be 5)
+
+# Define a sequence of lambda values for grid search
+lambda_grid <- seq(3, 7, length.out = 1000) 
+
+# Define the log-likelihood function
+log_likelihood <- function(lambda) {
+  return( sum_x * log(lambda) - n * lambda ) 
+}
+
+# Evaluate log-likelihood over the grid
+log_lik_values <- sapply(lambda_grid, log_likelihood)
+
+# Find the lambda that maximizes log-likelihood
+lambda_hat_grid <- lambda_grid[which.max(log_lik_values)]
+
+# Print results
+cat("Approximated MLE from grid search:", lambda_hat_grid, "\n")
+cat("Theoretical MLE from calculus:", x_bar, "\n")
+
+# Plot log-likelihood function
+plot(lambda_grid, log_lik_values, type = "l", col = "blue", lwd = 2,
+     xlab = expression(lambda), ylab = "Log-Likelihood",
+     main = "Log-Likelihood Function for Poisson MLE")
+abline(v = lambda_hat_grid, col = "red", lty = 2, lwd = 2)
+legend("bottomleft", legend = c("Log-Likelihood", "MLE Estimate"),
+       col = c("blue", "red"), lty = c(1, 2), lwd = c(2, 2))
+
+```
+
+
 ## Exercise 4 (Derived from Chapter 2 of BMLR).
 
 **The hot hand in basketball.**  @Gilovich1985 wrote a controversial but compelling article claiming that there is no such thing as “the hot hand” in basketball.  That is, there is no empirical evidence that shooters have stretches where they are more likely to make consecutive shots, and basketball shots are essentially independent events.  One of the many ways they tested for evidence of a “hot hand” was to record sequences of shots for players under game conditions and determine if players are more likely to make shots after made baskets than after misses.  For instance, assume we recorded data from one player's first 5 three-point attempts over a 5-game period.  We can assume games are independent, but we’ll consider two models for shots within a game:
