@@ -1,6 +1,6 @@
 ---
 title: 'Review of Likelihoods'
-author: "STA 310: Homework 3"
+author: "Drew Davison - STA 310: Homework 3"
 output: pdf_document
 ---
 
@@ -34,9 +34,111 @@ P(X = x) = \frac{\lambda^x e^{-\lambda}}{x!}, \quad x = 0, 1, 2, \dots
 
 where \( \lambda > 0 \) is the rate parameter, which represents both the mean and variance of the distribution.
 
+The likelihood function for the Poisson distribution, given a set of observations \( x_{1:n} = (x_1, x_2, \dots, x_n) \) from an i.i.d. sample, is the joint probability mass function:
+
+\[
+L(\lambda \mid x_{1:n}) = \prod_{i=1}^{n} P(X_i = x_i).
+\]
+
+Using the Poisson PMF:
+
+\[
+P(X_i = x_i) = \frac{\lambda^{x_i} e^{-\lambda}}{x_i!},
+\]
+
+the likelihood function is:
+
+\[
+L(\lambda \mid x_{1:n}) = \prod_{i=1}^{n} \frac{\lambda^{x_i} e^{-\lambda}}{x_i!}.
+\]
+
+Expanding the product:
+
+\[
+L(\lambda \mid x_{1:n}) = \frac{\lambda^{\sum_{i=1}^{n} x_i} e^{-n\lambda}}{\prod_{i=1}^{n} x_i!}.
+\]
+
+Thus, the likelihood function for \( x_{1:n} \) under a Poisson distribution with parameter \( \lambda \) is:
+
+\[
+L(\lambda \mid x_{1:n}) = \frac{\lambda^{\sum x_i} e^{-n\lambda}}{\prod x_i!}.
+\]
+
+
 ## Exercise 2
 
 Derive using calculus based methods the MLE of $\lambda$ is $\sum_i x_i/n$ (sample mean) and show that it is in fact a maximum. 
+
+Given an i.i.d. sample \( x_1, x_2, \dots, x_n \) from a Poisson distribution with parameter \( \lambda \), the likelihood function is:
+
+\[
+L(\lambda \mid x_{1:n}) = \prod_{i=1}^{n} \frac{\lambda^{x_i} e^{-\lambda}}{x_i!}.
+\]
+
+Taking the log-likelihood function:
+
+\[
+\log L(\lambda) = \sum_{i=1}^{n} \log \left( \frac{\lambda^{x_i} e^{-\lambda}}{x_i!} \right).
+\]
+
+Expanding the summation:
+
+\[
+\log L(\lambda) = \sum_{i=1}^{n} \left[ x_i \log \lambda - \lambda - \log (x_i!) \right].
+\]
+
+Since the term \( \sum_{i=1}^{n} \log (x_i!) \) does not depend on \( \lambda \), it can be ignored in differentiation.
+
+To find the MLE, we differentiate the log-likelihood with respect to \( \lambda \):
+
+\[
+\frac{d}{d\lambda} \log L(\lambda) = \sum_{i=1}^{n} \left[ \frac{x_i}{\lambda} - 1 \right].
+\]
+
+Setting this derivative equal to zero:
+
+\[
+\sum_{i=1}^{n} \left[ \frac{x_i}{\lambda} - 1 \right] = 0.
+\]
+
+Rearranging:
+
+\[
+\sum_{i=1}^{n} \frac{x_i}{\lambda} = n.
+\]
+
+\[
+\frac{1}{\lambda} \sum_{i=1}^{n} x_i = n.
+\]
+
+Solving for \( \lambda \):
+
+\[
+\lambda = \frac{\sum_{i=1}^{n} x_i}{n}.
+\]
+
+Thus, the **MLE for** \( \lambda \) is:
+
+\[
+\hat{\lambda} = \bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i.
+\]
+
+To confirm that this is a **maximum**, we compute the second derivative:
+
+\[
+\frac{d^2}{d\lambda^2} \log L(\lambda) = \sum_{i=1}^{n} \left( -\frac{x_i}{\lambda^2} \right).
+\]
+
+Since \( x_i \) are non-negative, this sum is always **negative** for \( \lambda > 0 \), meaning that the function is **concave** at \( \hat{\lambda} \), confirming a **maximum**.
+
+Thus, the **MLE** of \( \lambda \) is:
+
+\[
+\hat{\lambda} = \frac{\sum x_i}{n}
+\]
+
+which is the **sample mean**, and it is indeed a **maximum**.
+
 
 ## Exercise 3 
 
