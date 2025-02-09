@@ -27,3 +27,29 @@ b. Post in Slack
 c. Ask in Slack
 
 According to the course syllabus, the only correct answer is option **"a."** to ask in office hours. There is no Slack for the course. However, Ed Discussion is an alternative option to ask questions about course content. 
+
+# Question 3
+
+If a homework assignment is due on Wednesday at 11:59pm, when is the latest it can be
+turned in for credit?
+
+The latest it can be turned in for credit is the due date Wednesday at 11:59pm. Per the course syllabus, there are no late work extensions, as the lowest grades are dropped.
+
+# Question 4
+
+The course policy on the use of artificial intelligence is based on two guiding principles: (1)
+Cognitive dimension and (2) Ethical dimension. Briefly describe what each dimension
+means.
+
+1. The course policy on the Cognitive dimension of artificial intelligence states that:
+
+"Working with AI should not reduce your ability to think clearly. We will practice
+using AI to facilitate—rather than hinder—learning."
+
+This means that when using AI a student should be learning and understanding the material. Simply copying and pasting AI produced material does not facilitate learning.
+
+2. The course policy on the Ethical dimension of artificial intelligence states that:
+
+"Students using AI should be transparent about their use and make sure it aligns with academic integrity"
+
+Practically, students are required to cite any use of AI in the production of code, and students are not permitted to use AI to produce narrative. Students should also comply with all Duke Acadmeic Policies regarding academic integrity.
