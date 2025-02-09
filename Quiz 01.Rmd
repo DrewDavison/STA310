@@ -121,3 +121,27 @@ Thus, the maximum likelihood estimator of \( \theta \) is:
 \[
 \hat{\theta}_{MLE} = \frac{Y}{n}
 \]
+
+# Question 7
+
+Provide the **three** assumptions of a generalized linear model that may deviate from a
+linear model. State the **one** assumption they share in common.
+
+**The three assumptions that may deviate from a linear model are:**
+
+Relationship between response and predictor(s) can be nonlinear.
+
+Response variable can be non-normal.
+
+Variance in response can differ at each level of predictor(s).
+
+**The assumption that they share in common is:**
+
+The independence assumption still must hold.
+
+# Question 8
+
+Describe, in your own words, the importance of exploratory data analysis (in less than
+two sentences).
+
+Exploratory data analysis is important because it provides context to the variables, observations, and their relationships, as well as identifying anomalies (outliers or data errors), and it aides in the model selection process.
