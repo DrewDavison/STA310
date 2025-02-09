@@ -2,7 +2,7 @@
 title: "Quiz 01"
 author: "Drew Davison"
 output: pdf_document
-date: "2025-02-09"
+date: "02-09-2025"
 ---
 
 # Question 1
@@ -53,3 +53,71 @@ This means that when using AI a student should be learning and understanding the
 "Students using AI should be transparent about their use and make sure it aligns with academic integrity"
 
 Practically, students are required to cite any use of AI in the production of code, and students are not permitted to use AI to produce narrative. Students should also comply with all Duke Acadmeic Policies regarding academic integrity.
+
+# Question 5
+
+Suppose data from 100 randomly selected elementary school students are used to fit a
+regression model to predict height (in inches) based on age (in months). Which of the
+following best describes the normality assumption for this model?
+
+The residuals, being the differences between the observed and predicted heights (in inches), are normally distributed in the model.
+
+# Question 6
+
+Let \( Y \sim \text{Binomial}(n, \theta) \). The likelihood function is given by:
+
+\[
+L(\theta) = P(Y = y \mid \theta) = \binom{n}{y} \theta^y (1 - \theta)^{n-y}
+\]
+
+where \( n \) is known and \( \theta \) is the unknown parameter.
+
+# Part 2 of Question 6:
+
+Since the binomial coefficient \( \binom{n}{y} \) does not depend on \( \theta \), it can be ignored in maximization. Taking the natural logarithm of the likelihood function (log-likelihood):
+
+\[
+\ell(\theta) = \log L(\theta) = \log \binom{n}{y} + y \log \theta + (n - y) \log (1 - \theta)
+\]
+
+To find the maximum likelihood estimator \( \hat{\theta}_{MLE} \), we differentiate the log-likelihood function with respect to \( \theta \):
+
+\[
+\frac{d}{d\theta} \ell(\theta) = \frac{y}{\theta} - \frac{n - y}{1 - \theta}
+\]
+
+Setting the derivative equal to zero:
+
+\[
+\frac{y}{\theta} - \frac{n - y}{1 - \theta} = 0
+\]
+
+Solving for \( \theta \):
+
+\[
+\frac{y}{\theta} = \frac{n - y}{1 - \theta}
+\]
+
+Cross multiplying:
+
+\[
+y (1 - \theta) = (n - y) \theta
+\]
+
+\[
+y - y\theta = n\theta - y\theta
+\]
+
+\[
+y = n\theta
+\]
+
+\[
+\hat{\theta}_{MLE} = \frac{y}{n}
+\]
+
+Thus, the maximum likelihood estimator of \( \theta \) is:
+
+\[
+\hat{\theta}_{MLE} = \frac{Y}{n}
+\]
