@@ -1,0 +1,29 @@
+---
+title: "Quiz 01"
+author: "Drew Davison"
+output: pdf_document
+date: "2025-02-09"
+---
+
+# Question 1
+
+Which member of the teaching team has office hours Tuesdays 10:30 - 11:30am?
+
+According to the course syllabus, no member of the teaching team has office hours Tuesdays 10:30 - 11:30 AM. The office hours per the syllabus for the teaching team are as follows:
+
+Professor Rebecca Steorts - MW 1:00 PM - 2:00 PM
+
+Suchismita Roy -  TuTh 4:00 PM – 5:00 PM
+
+Wenxin Guo MW 4:30 PM – 5:30 PM
+
+# Question 2
+
+If you have a question about the course content, how should you ask it? Select all that
+apply.
+
+**a. Ask in office hours**
+b. Post in Slack
+c. Ask in Slack
+
+According to the course syllabus, the only correct answer is option **"a."** to ask in office hours. There is no Slack for the course. However, Ed Discussion is an alternative option to ask questions about course content. 
