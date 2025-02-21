@@ -145,7 +145,8 @@ c. What is the estimated dispersion parameter? Show how this value is calculated
 
 ```{r}
 
-dispersion <- summary(quasi_poisson_model)$deviance / summary(quasi_poisson_model)$df.residual
+dispersion <- summary(quasi_poisson_model)$deviance / 
+  summary(quasi_poisson_model)$df.residual
 dispersion
 
 ```
@@ -179,13 +180,165 @@ a. Use the R function rpois() to generate 10,000 $x_i$ from a regular Poisson di
 
 Now, consider 10,000 different Poisson distributions where $\lambda_i = y_i$. Randomly generate one $z_i$ from each Poisson distribution. Plot a histogram of these $z_i$ and compare it to your original histogram of $X$ (where $X \sim \textrm{Poisson}(1.5)$). How do the means and variances compare?
 
+```{r}
+
+set.seed(123)
+
+X <- rpois(10000, lambda = 1.5)
+
+hist(X, main = "Histogram of X ~ Poisson(1.5)", 
+     xlab = "X", col = "lightblue", border = "black")
+
+mean_X <- mean(X)
+var_X <- var(X)
+
+cat("Mean of X: ", mean_X, "\n")
+cat("Variance of X: ", var_X, "\n")  
+```
+
+```{r}
+set.seed(123)
+
+Y <- rgamma(10000, shape = 3, rate = 2)
+
+Z <- sapply(Y, function(lambda) rpois(1, lambda))
+
+hist(Z, main = "Histogram of Z ~ Poisson(Y)", 
+     xlab = "Z", col = "lightcoral", border = "black")
+
+mean_Z <- mean(Z)
+var_Z <- var(Z)
+
+cat("Mean of Z: ", mean_Z, "\n")
+cat("Variance of Z: ", var_Z, "\n")  
+
+```
+
+The histograms are very different as the first has gaps and a mode larger than in the second.
+
+The means of the two are similar, but the variance in the second is greater.
+
 b. A negative binomial distribution can actually be expressed as a gamma-Poisson mixture. In Part a, you looked at a gamma-Poisson mixture $Z \sim \textrm{Poisson}(\lambda)$ where $\lambda \sim \textrm{Gamma}(r = 3, \lambda' = 2)$.
 
 Find the parameters of a negative binomial distribution $X \sim \textrm{NegBinom}(r, p)$ such that $X$ is equivalent to $Z$. As a hint, the means of both distributions must be the same, so $\frac{r(1-p)}{p} = \frac{3}{2}$.
 
 Show through histograms and summary statistics that your negative binomial distribution is equivalent to the gamma-Poisson mixture. You can use rnbinom() in R.
 
-c. Make an argument that if you want a $\textrm{NegBinom}(r, p)$ random variable, you can instead sample from a Poisson distribution, where the $\lambda$ values are themselves sampled from a gamma distribution with parameters $r$ and $\lambda' = \frac{p}{1-p}$. You may show equivalency via the simulations or mathematically, however, make sure your arguments are precise and clear. 
+```{r}
+
+set.seed(123)
+
+
+r_gamma <- 3
+lambda_gamma <- 2
+Y <- rgamma(10000, shape = r_gamma, rate = lambda_gamma)
+Z <- sapply(Y, function(lambda) rpois(1, lambda))
+
+
+r_nb <- 3
+mean_gamma_poisson <- 3 / 2  
+
+
+p <- r_nb / (r_nb + mean_gamma_poisson)  
+
+
+X <- rnbinom(10000, size = r_nb, prob = p)
+
+
+par(mfrow = c(1, 2)) 
+
+
+hist(Z, main = "Z ~ Gamma-Poisson", 
+     xlab = "Z", col = "lightblue", border = "black")
+
+
+hist(X, main = "X ~ Negative Binomial", 
+     xlab = "X", col = "lightcoral", border = "black")
+
+
+cat("Summary of Gamma-Poisson mixture (Z):\n")
+cat("Mean: ", mean(Z), "\n")
+cat("Variance: ", var(Z), "\n\n")
+
+cat("Summary of Negative Binomial (X):\n")
+cat("Mean: ", mean(X), "\n")
+cat("Variance: ", var(X), "\n")
+
+```
+
+
+c. Make an argument that if you want a $\textrm{NegBinom}(r, p)$ random variable, you can instead sample from a Poisson distribution, where the $\lambda$ values are themselves sampled from a gamma distribution with parameters $r$ and $\lambda' = \frac{p}{1-p}$. You may show equivalency via the simulations or mathematically, however, make sure your arguments are precise and clear.
+
+\textbf{Negative Binomial Distribution:} A random variable \( X \sim \textrm{NegBinom}(r, p) \) has the following characteristics:
+\begin{itemize}
+    \item \textbf{Mean:} \( \mathbb{E}[X] = \frac{r(1 - p)}{p} \)
+    \item \textbf{Variance:} \( \text{Var}(X) = \frac{r(1 - p)}{p^2} \)
+\end{itemize}
+The Negative Binomial distribution can be interpreted as the number of failures before a fixed number of successes in a sequence of Bernoulli trials, where the number of trials is random and follows a \textbf{Poisson} distribution with parameter \( \lambda \).
+
+\textbf{Poisson-Gamma Mixture:} A random variable \( Z \) is said to follow a Poisson-Gamma mixture if:
+\begin{itemize}
+    \item First, we sample a random variable \( \lambda \) from a \textbf{Gamma} distribution: \( \lambda \sim \textrm{Gamma}(r, \lambda') \).
+    \item Next, given \( \lambda \), we sample a Poisson random variable: \( Z | \lambda \sim \textrm{Poisson}(\lambda) \).
+\end{itemize}
+This means that the random variable \( Z \) is a mixture of Poisson distributions, where the rate parameter \( \lambda \) follows a Gamma distribution.
+
+The \textbf{Gamma} distribution with shape parameter \( r \) and rate parameter \( \lambda' \) has the following characteristics:
+\begin{itemize}
+    \item \textbf{Mean:} \( \mathbb{E}[\lambda] = \frac{r}{\lambda'} \)
+    \item \textbf{Variance:} \( \text{Var}(\lambda) = \frac{r}{\lambda'^2} \)
+\end{itemize}
+
+The \textbf{Poisson} distribution with rate parameter \( \lambda \) has the following characteristics:
+\begin{itemize}
+    \item \textbf{Mean:} \( \mathbb{E}[Z | \lambda] = \lambda \)
+    \item \textbf{Variance:} \( \text{Var}(Z | \lambda) = \lambda \)
+\end{itemize}
+
+The \textbf{overall mean and variance} of the \textbf{Poisson-Gamma mixture} (denoted \( Z \)) can be computed as follows:
+
+\textbf{Mean:} 
+\[
+\mathbb{E}[Z] = \mathbb{E}[\mathbb{E}[Z | \lambda]] = \mathbb{E}[\lambda] = \frac{r}{\lambda'}
+\]
+
+\textbf{Variance:}
+\[
+\text{Var}(Z) = \mathbb{E}[\text{Var}(Z | \lambda)] + \text{Var}(\mathbb{E}[Z | \lambda]) 
+= \mathbb{E}[\lambda] + \text{Var}(\lambda) 
+= \frac{r}{\lambda'} + \frac{r}{\lambda'^2}
+\]
+
+Thus, the variance of the Gamma-Poisson mixture is:
+\[
+\text{Var}(Z) = \frac{r(1 + \lambda')}{\lambda'^2}
+\]
+
+Now, let's examine the \textbf{Negative Binomial} distribution:
+
+\textbf{Mean:} For \( X \sim \textrm{NegBinom}(r, p) \), we have:
+\[
+\mathbb{E}[X] = \frac{r(1 - p)}{p}
+\]
+
+\textbf{Variance:}
+\[
+\text{Var}(X) = \frac{r(1 - p)}{p^2}
+\]
+
+To connect the two distributions, we look for parameters of the Gamma distribution such that the \textbf{mean} and \textbf{variance} of the \textbf{Gamma-Poisson mixture} match the \textbf{mean} and \textbf{variance} of the \textbf{Negative Binomial distribution}.
+
+From the equivalency of the means:
+\[
+\frac{r}{\lambda'} = \frac{r(1 - p)}{p}
+\]
+
+This leads to:
+\[
+\lambda' = \frac{p}{1 - p}
+\]
+
+Thus, the rate parameter \( \lambda' \) of the Gamma distribution should be \( \frac{p}{1 - p} \) for the \textbf{Gamma-Poisson mixture} to match the \textbf{Negative Binomial} distribution.
 
 5. In a 2018 study, Chapp et al. (2018) scraped every issue statement from webpages of candidates for the U.S. House of Representatives, counting the number of issues candidates commented on and scoring the level of ambiguity of each statement. We will focus on the issue counts, and determining which attributes (of both the district as a whole and the candidates themselves) are associated with candidate silence (commenting on 0 issues) and a willingness to comment on a greater number of issues. The data set is in ambiguity.csv in the data folder . This analysis will focus on the following variables:
 
