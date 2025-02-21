@@ -1,6 +1,6 @@
 ---
 title: 'Poisson Regression'
-author: "STA 310: Homework 4"
+author: "Drew Davison - STA 310: Homework 4"
 output: pdf_document
 ---
 
@@ -28,11 +28,21 @@ A state wildlife biologist collected data from 250 park visitors as they left at
 
 a. Define the response.
 
+The response variable is the number of fish caught per visitor during their one-week stay. This is a discrete and non-negative quantity since it represents the number of fish caught.
+
 b. What are the possible values for the response?
+
+The possible values are non-negative integers starting from 0.
 
 c. What does $\lambda$ represent?
 
+In a Poisson model, $\lambda$ represents the mean and the variance of the number of fish caught per visitor. From the given information, $\lambda$ is 21.5 fish per week.
+
 d. Would a zero-inflated model be considered here? If so, what would be a "true zero"?
+
+If there are park visitors who did not attempt to fish during their stay, then yes, a zero-inflated model would be considered in this scenario. If a significant number of visitors report zero fish caught, then it should be considered.
+
+A "true zero" in this case would refer to a visitor who actively fished but caught no fish. This is different from a structural zero, where a visitor did not attempt to fish at all. In a zero-inflated model, structural zeros are modeled separately from the count process.
 
 2. <!--From Sec. 4.11.2, Ex. 2-->
 
