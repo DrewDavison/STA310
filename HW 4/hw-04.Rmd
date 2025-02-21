@@ -62,11 +62,68 @@ The data can be found in crab.csv in the data folder. It includes the following 
 
 Make sure to convert Spine and Color to the appropriate data types in R before doing the analysis.
 
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(skimr)
+crab<- read_csv("~/STA310/crab.csv")
+
+crab$Spine <- factor(crab$Spine, levels = c(1, 2, 3), 
+                   labels = c("Both Good", "One Worn or Broken", "Both Worn or Broken"))
+
+crab$Color <- factor(crab$Color, levels = c(1, 2, 3, 4), 
+                   labels = c("Light Medium", "Medium", "Dark Medium", "Dark"))
+
+```
+
+
 a. Create a histogram of Satellite. Is there preliminary evidence the number of satellites could be modeled as a Poisson response? Briefly explain.
+
+```{r}
+library(ggplot2)
+library(readr)
+
+sat_mean <- mean(crab$Satellite)
+sat_var <- var(crab$Satellite)
+sat_sd <- sd(crab$Satellite)
+
+ggplot(crab, aes(x = Satellite)) +
+  geom_histogram(binwidth = 1, color = "black", fill = "lightblue") +
+  labs(title = "Histogram of Satellite Counts",
+       x = "Number of Satellites",
+       y = "Frequency") +
+  annotate("text", x = max(crab$Satellite) * 0.7, y = max(table(crab$Satellite)) * 0.9,
+           label = paste0("Mean: ", round(sat_mean, 2), 
+                          "\nVariance: ", round(sat_var, 2), 
+                          "\nSD: ", round(sat_sd, 2)),
+           size = 5, hjust = 0) +
+  theme_minimal()
+
+```
+
+Yes, there is preliminary evidence for the number of satellites being modeled as a Poisson response. The variable is a non-negative integer beginning at zero, and the distribution of the variable is right-skewed. However, it is worth noting that there is a potential for overdispersion, as the variance is greater than the mean. 
 
 b. Fit a Poisson regression model including Width, Weight, and Spine as predictors. Display the model with the 95% confidence interval for each coefficient.
 
+```{r}
+poisson_model <- glm(Satellite ~ Width + Weight + Spine, 
+                     family = poisson(link = "log"), data = crab)
+
+tidy(poisson_model, conf.int = TRUE, exponentiate = TRUE, conf.level = 0.95)
+```
+
 c. Describe the effect of Spine in terms of the mean number of satellites.
+
+Since I exponentiated the coefficients, these values represent rate ratios on the mean number of satellites.
+
+The baseline category of Spine is "Both Good."
+
+The mean number of satellites for crabs with one worn or broken spine is 0.807 times (or ~19.3% lower) than that of crabs with both good spines.
+
+The mean number of satellites for crabs with both spines worn or broken is 0.952 times (or ~4.8% lower) than that of crabs with both good spines.
+
+Crabs with spine damage tend to have fewer satellites than those with both good spines.
+Greater damage (one vs. both spines worn/broken) does not show a large additional decrease, as going from one worn/broken to both worn/broken only slightly reduces the mean number of satellites.
 
 3. Use the scenario from the previous exercise to answer questions (a) - (d).
 
