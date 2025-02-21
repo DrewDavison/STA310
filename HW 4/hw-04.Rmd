@@ -129,11 +129,45 @@ Greater damage (one vs. both spines worn/broken) does not show a large additiona
 
 a. We would like to fit a quasi-Poisson regression model for this data. Briefly explain why we may want to consider fitting a quasi-Poisson regression model for this data.
 
+We may want to consider fitting a quasi-Poisson regression model due to the overdispersion in Satellite, as mentioned in part 2a. Overdispersion can be solved through a quasi-Poisson regression because it adjusts the standard errors.
+
 b. Fit a quasi-Poisson regression model that corresponds with the model chosen in the previous exercise. Display the model.
+
+```{r}
+quasi_poisson_model <- glm(Satellite ~ Width + Weight + Spine, 
+                           family = quasipoisson(link = "log"), data = crab)
+
+tidy(quasi_poisson_model)
+```
+
 
 c. What is the estimated dispersion parameter? Show how this value is calculated.
 
+```{r}
+
+dispersion <- summary(quasi_poisson_model)$deviance / summary(quasi_poisson_model)$df.residual
+dispersion
+
+```
+
+$\hat{\phi}$ = $\frac{\sum \left( \text{Pearson residuals}^2 \right)}{n - p}$
+
+The above is the formula for the estimated dispersion parameter.
+
+Residual Deviance is a measure of the discrepancy between the fitted model and the data.
+Residual Degrees of Freedom is calculated as the number of observations minus the number of parameters estimated.
+
+If the dispersion parameter is close to 1, the model fits the data similarly to a Poisson model. If it’s significantly larger than 1, it indicates overdispersion.
+
 d. How do the estimated coefficients change compared to the model chosen in the previous exercise? How do the standard errors change?
+
+When you move from a Poisson regression model to a quasi-Poisson regression model, the estimated coefficients themselves will generally remain similar. However, the standard errors will likely increase in the quasi-Poisson model, particularly if there is overdispersion in the data. This is because the quasi-Poisson model adjusts for overdispersion by modifying the standard errors.
+
+```{r}
+tidy(poisson_model)
+tidy(quasi_poisson_model)
+```
+In this case, the estimates have remained the same, but the standard errors are much larger in the quasi-Poisson model.
 
 4. The goal of this exercise is to use simulation to understand the equivalency between a gamma-Poisson mixture and a negative binomial distribution.
 
