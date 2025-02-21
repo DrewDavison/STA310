@@ -358,13 +358,74 @@ We will use a **hurdle model** to analyze the data. A hurdle model is similar to
 
 We will use the `pscl` package and the `hurdle` function in it to analyze a hurdle model. Note that coefficients in the "zero hurdle model" section of the output relate predictors to the log-odds of being a *non-zero* (i.e., having at least one issue statement), which is opposite of the ZIP model.
 
+```{r}
+ambiguity<- read_csv("~/STA310/ambiguity.csv")
+```
+
+
 a. Visualize the distribution of the response variable totalIssuePages. Why might we consider using a hurdle model compared to a Poisson model? Why is a zero-inflated Poisson model not appropriate in this scenario?
+
+```{r}
+ggplot(ambiguity, aes(x = totalIssuePages)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Total Issue Pages", x = "Total Issue Pages", y = "Frequency")
+
+```
+
+A hurdle model is appropriate when there are excess zeros in the data and those zeros are likely due to a different process than the non-zero values. This distribution has a large number of zeroes. All zeroes are treated as the same in a hurdle model.
+
+A zero-inflated model is not appropriate because it assumes that the zeroes come from two distinct groups, which is not the case in the context of this data.
 
 b. Create a plot of the empirical log odds of having at least one issue statement by ideology. You may want to group ideology values first. What can you conclude from this plot?
 
+```{r}
+
+ambiguity$has_issues <- ifelse(ambiguity$totalIssuePages > 0, 1, 0)
+
+ambiguity$ideologybin <- cut_interval(ambiguity$ideology, n = 5)
+
+log_odds <- aggregate(has_issues ~ ideologybin, data = ambiguity, FUN = function(x) {
+  p <- mean(x)
+  log(p / (1 - p)) 
+})
+
+ggplot(log_odds, aes(x = ideologybin, y = has_issues)) +
+  geom_bar(stat = "identity", fill = "lightblue") +
+  labs(title = "Empirical Log Odds of Having At Least One Issue by Ideology (Binned)", 
+       x = "Ideology (Binned)", 
+       y = "Empirical Log Odds") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+It appears that as the ideology, which is the candidates left-right orientation, figure increases , the log odds of having at least one issue increases.
+
 c. Create a hurdle model with ideology and democrat as predictors in both parts. Display the model. Interpret ideology in both parts of the model.
 
+```{r}
+library(pscl)
+
+model <- hurdle(totalIssuePages ~ ideology + democrat, data = ambiguity)
+
+summary(model)
+
+```
+
+
+In the count part, the coefficient for ideology, -0.005902, explains how increases in ideology decrease the expected count of issues commented on by candidates who comment on at least one issue.
+
+In the zero hurdle part, the coefficient for ideology, 0.5746, explains how increase in ideology increase the log-odds of commenting on at least one issue.
+
 d. Repeat (d), but include an interaction in both parts. Interpret the interaction in the zero hurdle part of the model.
+
+```{r}
+model_interaction <- hurdle(totalIssuePages ~ ideology * democrat, data = ambiguity)
+
+summary(model_interaction)
+
+```
+
+The interaction term (-1.3995) in the zero hurdle part of the model explains how the increase of ideology on the log-odds of having at least one issue decreases if the candidate is a Democrat
 
 # Grading
 
@@ -398,3 +459,7 @@ For example, something like this might help:
 ideologybin = cut_interval(ideology, n=5)), where the number of bins of 5 was chosen empirically by playing around with the data. 
 
 ## References 
+
+https://jsdajournal.springeropen.com/articles/10.1186/s40488-021-00121-4
+
+https://bookdown.org/roback/bookdown-BeyondMLR/ch-poissonreg.html#exercises-3
