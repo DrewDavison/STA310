@@ -1,6 +1,6 @@
 ---
 title: 'Generalized Linear Models'
-author: "STA 310: Homework 5"
+author: "Drew - Davison STA 310: Homework 5"
 output: pdf_document
 ---
 
@@ -18,6 +18,30 @@ where:
 \end{itemize}
 
 Is this a member of the exponential family (in canonical form), where both parameters are unknown? If so, identify the components in canonical form. If not, explain why not. 
+
+To determine whether the Pareto Type I distribution belongs to the exponential family, we compare it to the general form of an exponential family distribution:
+
+\begin{equation}
+    f(x|\theta) = h(x) \exp \left( \eta(\theta) T(x) - A(\theta) \right).
+\end{equation}
+
+Rewriting the given PDF:
+
+\begin{equation}
+    f(x) = \alpha x_m^{\alpha} \exp \left( - (\alpha + 1) \ln x \right) \mathbb{1}_{\{x \geq x_m\}}.
+\end{equation}
+
+Comparing with the exponential family form:
+\begin{itemize}
+    \item The term $\exp(- (\alpha+1) \ln x)$ suggests that the sufficient statistic is $T(x) = \ln x$.
+    \item The coefficient $(\alpha+1)$ corresponds to the natural parameter $\eta(\theta)$.
+    \item The function $h(x)$ should be independent of the parameter.
+\end{itemize}
+
+A key requirement for a distribution to belong to the exponential family is that the support of $x$ must not depend on the parameter. However, in the Pareto Type I distribution, the support is restricted to $x \geq x_m$, where $x_m$ is a parameter.
+
+Since the support of $x$ depends on $x_m$, the Pareto Type I distribution \textbf{does not} belong to the exponential family in its canonical form. The dependency of the support on a parameter violates a fundamental property required for membership in the exponential family.
+
 
 \newpage
 
@@ -58,6 +82,29 @@ In matrix notation, we can write the expression as
 \boldsymbol{1}^T \log(\boldsymbol{1} + \exp(X \boldsymbol\beta))
 \]
 
+\section{(a) Log-Likelihood Function}
+
+The probability of success in a logistic regression model is given by:
+\begin{equation}
+    \log \left( \frac{p}{1 - p} \right) = X \beta,
+\end{equation}
+where $X$ is the design matrix and $\beta$ is the vector of regression parameters. The likelihood function is:
+\begin{equation}
+    L(\beta) = \prod_{i=1}^{n} p_i^{y_i} (1 - p_i)^{1 - y_i}.
+\end{equation}
+Taking the natural logarithm, the log-likelihood function becomes:
+\begin{equation}
+    \log L(\beta) = \sum_{i=1}^{n} \left[ y_i \log p_i + (1 - y_i) \log (1 - p_i) \right].
+\end{equation}
+Substituting $\log \left( \frac{p_i}{1 - p_i} \right) = X_i \beta$ into the equation,
+\begin{equation}
+    \log L(\beta) = \sum_{i=1}^{n} \left[ y_i X_i \beta - \log (1 + e^{X_i \beta}) \right].
+\end{equation}
+In matrix notation:
+\begin{equation}
+    \log L(\beta) = y^T X \beta - 1^T \log (1 + e^{X \beta}).
+\end{equation}
+
 b. Show (derive) the score functions of the log-likelihood with respect to the regression parameters is as follows:
 
 \[
@@ -72,6 +119,17 @@ Define $\pi_i = \frac{\exp(\mathbf{X}_i^T\boldsymbol\beta)}{1+\exp(\mathbf{X}_i^
 \nabla_{\boldsymbol\beta} \log\mathcal{L}(p) = X^T(\boldsymbol{y} - \boldsymbol\pi)
 \]
 
+\section{(b) Score Function}
+
+The score function, which is the gradient of the log-likelihood with respect to $\beta$, is given by:
+\begin{equation}
+    \nabla_{\beta} \log L(\beta) = \sum_{i=1}^{n} \left( y_i X_i - \frac{e^{X_i^T \beta}}{1 + e^{X_i^T \beta}} X_i \right).
+\end{equation}
+Define $\pi_i = \frac{e^{X_i^T \beta}}{1 + e^{X_i^T \beta}}$, then in matrix notation:
+\begin{equation}
+    \nabla_{\beta} \log L(\beta) = X^T (y - \pi).
+\end{equation}
+
 c. Show (derive) the Hessian function of the log-likelihood with respect to the regression parameters is as follows:
 
 \[
@@ -82,7 +140,29 @@ You may also write the expression in matrix notation as follows:
 
 Let $W = diag \{ \pi_1(1- \pi_1), \ldots, \pi_n (1- \pi_n) \}.$ It follows that the Hessian can be written as $-X^T W X.$
 
-d. Using the previous steps to write out the Newton-Raphson Algorithm in matrix form. 
+\section{(c) Hessian Matrix}
+
+The Hessian, which is the second derivative of the log-likelihood, is given by:
+\begin{equation}
+    \nabla^2_{\beta} \log L(\beta) = - \sum_{i=1}^{n} \left( \frac{1}{1 + e^{X_i^T \beta}} \cdot \frac{e^{X_i^T \beta}}{1 + e^{X_i^T \beta}} X_i X_i^T \right).
+\end{equation}
+Using the weight matrix $W = \text{diag}\{\pi_i(1 - \pi_i)\}$, we can write the Hessian in matrix notation as:
+\begin{equation}
+    \nabla^2_{\beta} \log L(\beta) = -X^T W X.
+\end{equation}
+
+d. Using the previous steps to write out the Newton-Raphson Algorithm in matrix form.
+
+\section{(d) Newton-Raphson Algorithm}
+
+The Newton-Raphson update for $\beta$ is given by:
+\begin{equation}
+    \beta^{(t+1)} = \beta^{(t)} - \left( \nabla^2_{\beta} \log L(\beta) \right)^{-1} \nabla_{\beta} \log L(\beta).
+\end{equation}
+Expanding,
+\begin{equation}
+    \beta^{(t+1)} = \beta^{(t)} + (X^T W X)^{-1} X^T (y - \pi).
+\end{equation}
 
 e. A researcher is interested in how variables, such as GRE (Graduate Record Exam scores), GPA (grade point average) and prestige of the undergraduate institution, effect admission into graduate school. The response variable, admit/don’t admit, is a binary variable, which can be read in using the command below. 
 
@@ -100,12 +180,28 @@ y<-df[,1]
 x<-as.matrix(cbind(rep(1,400),df[,c(2,3,4)])) 
  
 Newton_Raphson_logistic <- function(x, y, b.init, tol=1e-8) {
-# use the same type of structure for your code# # as we did for the poisson
+  beta <- b.init
+  repeat {
+    pi <- 1 / (1 + exp(-x %*% beta))
+    W <- diag(as.vector(pi * (1 - pi)))
+    grad <- t(x) %*% (y - pi)
+    H <- -t(x) %*% W %*% x
+    beta_new <- beta - solve(H) %*% grad
+    if (sum(abs(beta_new - beta)) < tol) break
+    beta <- beta_new
+  }
+  return(beta)
 }
 ```
 
 
+```{r}
+b.init <- rep(0, ncol(x))
+coefficients <- Newton_Raphson_logistic(x, y, b.init)
+print(coefficients)
+```
 
+This function iteratively updates $\beta$ using the Newton-Raphson method until convergence. The estimated coefficients can be compared with those from `glm()` to verify correctness.
 
 
 \newpage
@@ -115,3 +211,140 @@ Newton_Raphson_logistic <- function(x, y, b.init, tol=1e-8) {
 Write and propose the question(s), include a rubric, and include a solution. 
 
 You may utilize online resource, but please do cite them if you use them and provide details. 
+
+\section*{Problem Description:}
+
+In this exercise, you are tasked with fitting a logistic regression model for predicting a binary outcome (success or failure) based on two predictors: the study time (in hours) and the prior GPA of a student. You will perform the following tasks, which will help you understand the underlying mechanics of logistic regression, assess model validity, and interpret the results.
+
+Consider the following setup for a fictional dataset of 100 students:
+
+\begin{itemize}
+    \item \textbf{Response Variable (Y)}: Whether a student passes or fails the exam (1 = pass, 0 = fail).
+    \item \textbf{Predictor Variables:}
+    \begin{itemize}
+        \item \textbf{Study Time (X1)}: Number of hours spent studying.
+        \item \textbf{GPA (X2)}: Prior GPA of the student (on a scale from 0 to 4).
+    \end{itemize}
+\end{itemize}
+
+The relationship between the response variable and predictors will be modeled using logistic regression.
+
+\section*{Tasks:}
+
+\begin{enumerate}
+    \item \textbf{Identify the Binomial Random Variable}
+    \begin{itemize}
+        \item[a.] Define the response variable and assess if it follows a binomial distribution. What assumptions are required to use the binomial distribution for modeling this type of data? How would you check these assumptions?
+    \end{itemize}
+
+    \item \textbf{Write the Logistic Regression Model}
+    \begin{itemize}
+        \item[a.] Write the logistic regression model for predicting the probability of passing the exam using study time and GPA as predictors.
+        \item[b.] Express the logistic regression model in two forms: (1) as a function of the logit (log-odds) and (2) as a function of the probability \( p \).
+    \end{itemize}
+
+    \item \textbf{Fit the Logistic Regression Model}
+    \begin{itemize}
+        \item[a.] Conceptually describe the fitting procedure of logistic regression. How does it differ from fitting a linear least squares regression (LLSR) model, which you might use for continuous outcomes?
+    \end{itemize}
+
+    \item \textbf{Interpret the Coefficients}
+    \begin{itemize}
+        \item[a.] Suppose the estimated coefficients for the logistic regression model are:
+        \[
+        \hat{\beta_0} = -2, \quad \hat{\beta_1} = 0.3, \quad \hat{\beta_2} = 0.5
+        \]
+        Interpret these coefficients in terms of odds ratios. What do these coefficients suggest about the relationship between the predictors (study time, GPA) and the probability of passing the exam?
+    \end{itemize}
+
+    \item \textbf{Use Residual Deviance for Model Evaluation}
+    \begin{itemize}
+        \item[a.] Define residual deviance in the context of logistic regression.
+        \item[b.] How would you compare the model with predictors (study time and GPA) to a null model (model with no predictors)? What role does the residual deviance play in this comparison?
+    \end{itemize}
+
+    \item \textbf{Model Evaluation: Unusual Observations and Transformations}
+    \begin{itemize}
+        \item[a.] Describe how residual analysis can be used to identify unusual observations or influential points in the logistic regression model. What are the next steps you might take if you find such observations?
+        \item[b.] How could transformations of the predictors (study time and GPA) affect the model fit? What types of transformations might you consider, if any?
+    \end{itemize}
+
+    \item \textbf{Binary vs. Binomial Responses}
+    \begin{itemize}
+        \item[a.] Discuss the difference between fitting a logistic regression model with a binary response (such as the pass/fail variable) and a binomial response.
+        \item[b.] If the response variable were binomial (e.g., the number of passes out of a fixed number of students), how would the logistic regression model change? Provide a conceptual description of how you would model such a response.
+    \end{itemize}
+\end{enumerate}
+
+\section*{Rubric:}
+
+\begin{table}[ht]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|c|l|}
+\hline
+\textbf{Criterion} & \textbf{Points} & \textbf{Description} \\ \hline
+\textbf{Identification of Binomial Random Variable} & 15 & Correctly identifies the response variable as binomial and assesses the validity of the binomial assumptions. \\ \hline
+\textbf{Logistic Regression Model} & 20 & Accurately writes the logistic regression model in both logit and \( p \) forms. \\ \hline
+\textbf{Fitting Procedure} & 15 & Clearly explains the difference between fitting logistic regression and fitting linear regression for binary outcomes. \\ \hline
+\textbf{Interpretation of Coefficients} & 20 & Accurately interprets the estimated coefficients in terms of odds ratios, explaining the impact of each predictor on the response variable. \\ \hline
+\textbf{Model Evaluation Using Residual Deviance} & 20 & Correctly defines and applies residual deviance for model comparison and evaluation. \\ \hline
+\textbf{Residual Analysis and Transformations} & 5 & Provides a clear discussion of how to use residual analysis to detect issues and potential transformations of predictors. \\ \hline
+\textbf{Binary vs. Binomial Responses} & 5 & Demonstrates a clear understanding of the difference between binary and binomial logistic regression models. \\ \hline
+\textbf{Total} & 100 & \\ \hline
+\end{tabular}%
+}
+\end{table}
+
+\section*{Solution Outline:}
+
+\begin{enumerate}
+    \item \textbf{Identify the Binomial Random Variable}
+    \begin{itemize}
+        \item The response variable `Y` is binary: 1 = pass, 0 = fail. The assumptions of the binomial distribution are:  
+        - The trials (students) are independent.  
+        - Each trial results in either success or failure (pass or fail).  
+        - The probability of success (passing the exam) is constant across trials.  
+        These assumptions can be checked using exploratory data analysis and graphical methods.
+    \end{itemize}
+
+    \item \textbf{Write the Logistic Regression Model}
+    \begin{itemize}
+        \item The logistic regression model is:  
+        \[
+        \log \left( \frac{p}{1 - p} \right) = \beta_0 + \beta_1 \cdot \text{study time} + \beta_2 \cdot \text{GPA}
+        \]
+        The corresponding model in terms of probability is:
+        \[
+        p = \frac{1}{1 + \exp{-(\beta_0 + \beta_1 \cdot \text{study time} + \beta_2 \cdot \text{GPA})}}.
+        \]
+    \end{itemize}
+
+    \item \textbf{Fit the Logistic Regression Model}
+    \begin{itemize}
+        \item Logistic regression uses maximum likelihood estimation (MLE) to find the coefficients that best fit the model. Unlike linear regression, which uses ordinary least squares, logistic regression estimates the parameters by maximizing the likelihood function.
+    \end{itemize}
+
+    \item \textbf{Interpret the Coefficients}
+    \begin{itemize}
+        \item \( \beta_0 \) is the log-odds of passing when study time and GPA are zero.  
+        \item \( \beta_1 \) (0.3): For each additional hour of study time, the odds of passing increase by a factor of \( \exp(0.3) \approx 1.35 \).  
+        \item \( \beta_2 \) (0.5): For each additional point in GPA, the odds of passing increase by a factor of \( \exp(0.5) \approx 1.65 \).
+    \end{itemize}
+
+    \item \textbf{Use Residual Deviance for Model Evaluation}
+    \begin{itemize}
+        \item Residual deviance is used to evaluate the model’s fit. The residual deviance for a model is the difference between the log-likelihood of the fitted model and the log-likelihood of the saturated model (perfect fit). Comparing this value with the null model’s deviance tells us how much better the model fits the data.
+    \end{itemize}
+
+    \item \textbf{Model Evaluation: Unusual Observations and Transformations}
+    \begin{itemize}
+        \item Residuals can be plotted to check for influential observations. If any residuals are unusually large, they may indicate outliers or influential data points. Consider transformations like logarithms or polynomial terms if the relationship between the predictors and outcome is non-linear.
+    \end{itemize}
+
+    \item \textbf{Binary vs. Binomial Responses}
+    \begin{itemize}
+        \item \textbf{Binary Response}: A binary logistic regression models the probability of one of two outcomes (e.g., pass/fail).  
+        \item \textbf{Binomial Response}: If we had counts of successes (e.g., number of passes out of a group of students), the logistic regression model would model the probability of success as a binomial distribution (number of successes out of a fixed number of trials).
+    \end{itemize}
+\end{enumerate}
