@@ -1,5 +1,5 @@
 ---
-title: "Homework 6"
+title: "Homework 6 - Drew Davison"
 format: 
   pdf:
     fig-height: 4
@@ -7,11 +7,14 @@ format:
 ---
 
 ```{r, echo = FALSE, warning = FALSE}
-#| label: load-packages
+#| label: load-packages-and-data
 
 library(tidyverse)
 library(broom)
 library(knitr)
+library(ggplot2)
+library(dplyr)
+birds <- read_csv("~/STA310/birdkeeping.csv")
 
 # add other packages as needed
 ```
@@ -39,16 +42,99 @@ Create a segmented bar chart and appropriate table of proportions showing the re
 :::
 
 ::: callout-note
+
+```{r}
+
+# Create a table of counts
+count_table <- table(birds$bird, birds$cancer)
+
+# Convert to proportions by row (birdkeeping)
+prop_table <- prop.table(count_table, margin = 1)
+print("Proportion Table:")
+print(round(prop_table, 2))
+
+# Convert to a data frame for ggplot
+df_plot <- as.data.frame(count_table)
+colnames(df_plot) <- c("Birdkeeping", "Cancer", "Count")
+
+# Plot segmented bar chart
+ggplot(df_plot, aes(x = Birdkeeping, y = Count, fill = Cancer)) +
+  geom_bar(stat = "identity", position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Relationship Between Birdkeeping and Cancer Diagnosis",
+    y = "Proportion",
+    x = "Birdkeeping Status",
+    fill = "Cancer Diagnosis"
+  ) +
+  theme_minimal()
+
+
+```
+
+The proportion table reveals:
+
+0-0: 80% of participants without birdkeeping did not have lung cancer.
+0-1: 20% of participants without birdkeeping did have lung cancer.
+1-0: 51% of participants with birdkeeping did not have lung cancer.
+1-1: 49% of participants with birdkeeping did have lung cancer.
+
+It appears that the relationship between birdkeeping and lung cancer is, for the given sample, that there is a higher percentage of people with lung cancer that keep birds than for those who do not keep birds.
+
 ## Part b
 
 Calculate the unadjusted odds ratio of a lung cancer diagnosis comparing birdkeepers to non-birdkeepers. Interpret this odds ratio in context. (Note: an unadjusted odds ratio is found by not controlling for any other variables.)
 :::
 
 ::: callout-note
+
+```{r}
+# Create a 2x2 table for birdkeeping and lung cancer
+table_lung <- table(birds$bird, birds$cancer)
+
+# View the table
+print(table_lung)
+
+# Calculate the odds ratio manually
+# OR = (a/c) / (b/d) = (exposed cases / exposed non-cases) / (unexposed cases / unexposed non-cases)
+
+# Extract counts
+a <- table_lung["1", "1"]        # birdkeepers with lung cancer
+b <- table_lung["0", "1"]         # non-birdkeepers with lung cancer
+c <- table_lung["1", "0"]    # birdkeepers without lung cancer
+d <- table_lung["0", "0"]     # non-birdkeepers without lung cancer
+
+# Calculate odds ratio
+odds_ratio <- (a / c) / (b / d)
+print(paste("Unadjusted Odds Ratio:", round(odds_ratio, 2)))
+
+```
+
+The unadjusted odds ratio of 3.88 indicates that birdkeepers had 3.88 times the odds of being diagnosed with lung cancer compared to non-birdkeepers.
+If the OR is greater than 1, this suggests a positive association between birdkeeping and lung cancer. If less than 1, it suggests a negative association
+This is a crude measure and does not account for potential confounders such as smoking or age.
+
 ## Part c
 Does there appear to be an interaction between number of years smoked and whether the subject keeps a bird? Demonstrate with an appropriate plot and briefly explain your response.
 :::
 
+```{r}
+
+ggplot(birds, aes(x = factor(bird), y = yrsmoke, fill = factor(bird))) +
+  geom_boxplot() +
+  labs(
+    title = "Years Smoked by Birdkeeping Status",
+    x = "Birdkeeping (0 = No, 1 = Yes)",
+    y = "Years Smoked"
+  ) +
+  theme_minimal() +
+  scale_fill_manual(values = c("#66c2a5", "#fc8d62"))
+
+```
+
+The median smoking years for those who keep birds is slightly higher than those who do not, however, the IQR is smaller for those who keep birds. The 25th percentile for those who keep birds is a greater number of years than those who do not keep birds. The 75th percentile for those who keep birds is a fewer number of years than those who do not keep birds.
+
+In conclusion, it does not appear that there is a meaningful difference in years smoked based on if someone keeps birds.
 
 Before answering the next questions, fit logistic regression models in R with cancer as the response and the following sets of explanatory variables:
 
@@ -57,6 +143,35 @@ Before answering the next questions, fit logistic regression models in R with ca
 - model3 = yrsmoke, bird
 - model4 = yrsmoke, bird, yrsmoke:bird
 
+```{r}
+# Model 1: age, yrsmoke, cigsday, female, highstatus, bird
+model1 <- glm(cancer ~ age + yrsmoke + cigsday + female + highstatus + bird, 
+              data = birds, 
+              family = binomial)
+
+# Model 2: yrsmoke, cigsday, highstatus, bird
+model2 <- glm(cancer ~ yrsmoke + cigsday + highstatus + bird, 
+              data = birds, 
+              family = binomial)
+
+# Model 3: yrsmoke, bird
+model3 <- glm(cancer ~ yrsmoke + bird, 
+              data = birds, 
+              family = binomial)
+
+# Model 4: yrsmoke, bird, and interaction between yrsmoke and bird
+model4 <- glm(cancer ~ yrsmoke * bird, 
+              data = birds, 
+              family = binomial)
+
+# Summary of all models
+tidy(model1)
+tidy(model2)
+tidy(model3)
+tidy(model4)
+
+```
+
 
 ::: callout-note
 ## Part d
@@ -64,6 +179,14 @@ Is there evidence that we can remove age and female from our model? Perform an a
 :::
 
 ::: callout-note
+
+```{r}
+# Perform likelihood ratio test comparing Model 1 and Model 2
+anova(model2, model1, test = "Chisq")
+
+```
+The p-value of 0.2828 is greater than 0.05, which means we fail to reject the null hypothesis. This suggests that removing age and female from the model does not significantly worsen the model.
+
 ## Part e
 Carefully interpret each of the four model coefficients (including the intercept) in model4 in context.
 :::
@@ -124,7 +247,7 @@ Ibanez and Roussel (2022) conducted an experiment to understand the impact of wa
 See the Introduction and Methods sections of Ibanez and Roussel (2022) for more details about the variables and see the class slides regarding the url for the paper.
 
 ```{r}
-nature <- read_csv("../data/nature.csv", show_col_types = FALSE)
+nature <- read_csv("~/STA310/HW-6/STA310/Data/nature.csv", show_col_types = FALSE)
 # https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0275806
 nature = nature %>% select(c("donation_binary", "Age", "Gender", "Treatment", "nep_high", "Donation (level)"))
 # summary(nature)
