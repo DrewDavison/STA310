@@ -185,26 +185,102 @@ Is there evidence that we can remove age and female from our model? Perform an a
 anova(model2, model1, test = "Chisq")
 
 ```
-The p-value of 0.2828 is greater than 0.05, which means we fail to reject the null hypothesis. This suggests that removing age and female from the model does not significantly worsen the model.
+The test statistic, being the Deviance Difference, is 2.53.
+
+The p-value of 0.2828 is greater than 0.05, which means we fail to reject the null hypothesis. 
+
+This suggests that removing age and female from the model does not significantly worsen the model.
 
 ## Part e
 Carefully interpret each of the four model coefficients (including the intercept) in model4 in context.
 :::
 
 ::: callout-note
+
+Intercept: -2.999
+This is the log-odds of cancer diagnosis for someone who does not keep birds (bird = 0) and has smoked for 0 years (yrsmoke = 0).
+
+exp(-2.999) ≈ 0.05
+
+So, a non-birdkeeper who has never smoked has about a 5% chance of being diagnosed with cancer.
+
+yrsmoke: 0.0528
+Among non-birdkeepers, each additional year of smoking is associated with a 5.4% increase in the odds of being diagnosed with cancer:
+exp(0.0528) ≈ 1.054
+So, for non-birdkeepers, smoking longer slightly increases cancer risk.
+
+bird: 1.179
+For individuals who keep birds and have smoked 0 years, their log-odds of cancer are 1.179 higher than non-birdkeepers who also never smoked.
+That translates to:
+exp(1.179) ≈ 3.25
+So, birdkeepers who never smoked have 3.25 times higher odds of being diagnosed with cancer compared to non-birdkeepers who never smoked.
+
+yrsmoke:bird interaction: 0.0093
+This term tells us how the effect of smoking duration on cancer risk differs for birdkeepers.
+Among birdkeepers, each additional year of smoking increases the log-odds of cancer by:
+0.0528 (main effect) + 0.0093 (interaction) = 0.0621
+So the combined effect of smoking and birdkeeping is slightly more harmful, but the interaction is not statistically significant (p = 0.78).
 ## Part f
 If you replaced yrsmoke everywhere it appears in model4 with a mean-centered version of yrsmoke, tell what would change among these elements: the 4 coefficients, the 4 p-values for coefficients, and the residual deviance.
 :::
 
 ::: callout-note
+
+```{r}
+# Create centered variable
+birds$yrsmoke_c <- birds$yrsmoke - mean(birds$yrsmoke)
+
+# New model with centered predictor
+model5 <- glm(cancer ~ yrsmoke_c + bird + yrsmoke_c:bird,
+    data = birds,
+    family = binomial)
+
+tidy(model5)
+```
+
+Changed: Intercept, coefficient for bird, p-values for intercept and bird
+Unchanged: coefficients for yrsmoke and interaction term, p-values for yrsmoke and interaction term, residual deviance
+
 ## Part g
 Observe that model3 is a potential final model based on this set of predictor variables. How does the adjusted odds ratio for birdkeeping from model3 compare with the unadjusted odds ratio you found in (b)? Is birdkeeping associated with a significant increase in the odds of developing lung cancer, even after adjusting for other factors?
 :::
 
 ::: callout-note
+
+```{r}
+# Fit Model 3: Adjusted for yrsmoke
+model3 <- glm(cancer ~ yrsmoke + bird, family = binomial, data = birds)
+summary(model3)
+
+# Extract the bird coefficient and calculate adjusted OR
+coef_bird <- coef(model3)["bird"]
+adjusted_or <- exp(coef_bird)
+adjusted_or
+
+```
+
+The unadjusted odds ratio calculated earlier was 3.88, meaning that birdkeepers had nearly four times the odds of being diagnosed with lung cancer compared to non-birdkeepers, without accounting for any other variables.
+
+In Model 3, which adjusts for years smoked, the adjusted odds ratio for birdkeeping is slightly higher—around 4.37. This suggests that even after accounting for smoking duration, birdkeeping is still associated with a significant increase in the odds of developing lung cancer.
+
+Because the adjusted odds ratio remains high and statistically significant, there is strong evidence that birdkeeping is independently associated with increased lung cancer risk.
+
 ## Part h
 Discuss the scope of inference in this study. Can we generalize our findings beyond the subjects in this study? Can we conclude that birdkeeping causes increased odds of developing lung cancer? Do you have other concerns with this study design or the analysis you carried out?
 :::
+
+Can we generalize the findings beyond the subjects in this study?
+The findings from this study are likely to be specific to this population and location, meaning that generalizing the results beyond this group may not be appropriate. The analysis adjusted for several factors like smoking history and socioeconomic status, which may not be representative of other populations. Any inference to different age groups, or individuals from outside The Hague, should be made cautiously. Therefore, the scope of inference is limited to individuals similar to those studied — specifically, young adults and middle-aged individuals in The Hague with a smoking history.
+
+Can we conclude that birdkeeping causes increased odds of developing lung cancer?
+This study was observational and case-control in nature, which means it identifies associations but does not provide evidence of causal relationships. While the study adjusts for potential confounders (age, sex, smoking, and socioeconomic status), there could still be other unmeasured confounders that may affect the relationship between birdkeeping and lung cancer. Moreover, the case-control design means the study is retrospective, relying on existing data, and we cannot infer causality without a more controlled experimental design (such as a randomized controlled trial or cohort study).
+
+Concerns with the study design or the analysis:
+Potential Confounders: Even though the study adjusted for smoking, age, and socioeconomic status, other confounders may exist, such as exposure to secondhand smoke, occupational exposures, or other environmental risk factors related to living in The Hague during this time period.
+
+No Longitudinal Data: This study design does not track participants over time, so it cannot capture temporal relationships between birdkeeping and lung cancer development. Cohort studies that follow participants for extended periods of time can better establish the timeline of risk exposure and disease onset.
+
+Data Limitations: The study is based on self-reported data, which may not be fully accurate, especially when it comes to smoking habits
 
 # Exercise 2
 
@@ -223,16 +299,24 @@ https://online.stat.psu.edu/stat504/lesson/8/8.4
 :::
 
 ::: callout-note
+
+The proportional odds model and the multinomial logistic regression model are both used for analyzing categorical outcome variables, but they differ in their assumptions and the types of relationships they model. The proportional odds model is used for ordinal outcomes, assuming that the relationship between each pair of outcome categories is the same (i.e., the odds ratios are constant across thresholds). In contrast, the multinomial logistic regression model is suited for nominal outcomes and does not assume any inherent ordering between categories, modeling each category's probability relative to a reference category. While the proportional odds model is more restrictive, it is simpler and easier to interpret when the assumption of proportionality holds, whereas the multinomial logistic model allows for more flexibility but requires estimating more parameters.
 ## Part b
 Table 5 in the paper contains the output for the wait time and treatment time models. Consider only the model for wait time. Describe the effect of arrival mode (ambulance, walk-in) on the waiting time. Note: walk-in is the baseline in the model. (A link to the paper can be found in the slides). 
 :::
 
 ::: callout-note
+
+The coefficient for arrival mode is −3.398, with a p-value of 0.000, and a 95% confidence interval of [−3.616, −3.180]. This negative and highly significant coefficient indicates that patients arriving by ambulance are much less likely to experience longer wait times compared to walk-in patients. In other words, ambulance arrivals are prioritized and tend to be seen more quickly, making them more likely to fall into the "less than 10 minutes" wait category. The strong significance and large magnitude of the effect underscore how crucial mode of arrival is in determining how quickly a patient is attended to in the ED.
 ## Part c
 Consider output from both the wait time and treatment time models. Use the results from both models to describe the effect of triage level (red = urgent, green = non-urgent) on the wait and treatment times in the ED. Note: red is the baseline level.
 :::
 
+Wait time model: The coefficient for triage level is 0.016, with a p-value of 0.153 and a 95% confidence interval of [−0.006, 0.037]. This suggests that, when compared to red (urgent) cases, green (non-urgent) cases tend to wait slightly longer, but this difference is not statistically significant. We cannot confidently conclude that triage level affects wait time.
 
+Treatment time model: The coefficient for triage level is −0.950, with a p-value of 0.000 and a 95% confidence interval of [−0.973, −0.926]. This means that green (non-urgent) cases receive significantly shorter treatment times than red (urgent) cases. The negative coefficient indicates that patients with less urgent conditions tend to be treated faster once seen.
+
+Triage level has a strong and significant effect on treatment time, with non-urgent patients receiving shorter treatments. However, its effect on wait time is minimal and not statistically significant, suggesting that urgent and non-urgent patients wait similar amounts of time before being treated.
 
 # Exercise 3
 
@@ -260,6 +344,38 @@ Figure 2 on pg. 9 of the article visualizes the relationship between donation am
 
 
 ::: callout-note
+
+
+
+```{r}
+
+
+plot_data <- nature %>%
+  group_by(Treatment, `Donation (level)`) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  group_by(Treatment) %>%
+  mutate(percentage = 100 * count / sum(count))
+
+plot_data$Treatment <- factor(plot_data$Treatment, levels = c("NATURE (T2)", "URBAN (T1)"))
+
+ggplot(plot_data, aes(x = `Donation (level)`, y = percentage, fill = Treatment)) +
+  geom_bar(stat = "identity", position = position_dodge(), color = "black") +
+  scale_fill_manual(values = c( "NATURE (T2)" = "gray20", "URBAN (T1)" = "gray80")) +
+  scale_x_continuous(breaks = 0:10) +  
+  scale_y_continuous(limit = c(0, 30)) +  
+  labs(x = "Donation to ENGO (€)", y = "Percentage", fill = "Treatment") +
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    legend.justification = "center",
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 9)
+  )
+
+
+
+```
+
 ## Part b
 Fit a probit regression model using age, gender, treatment, nep_high and the interaction between nep_high and treatment predict the likelihood of donating. (Note: Your model will be similar (but not exactly the same) as the “Likelihood” model in Table 5 on pg. 11.) Display the model.
 :::
@@ -267,6 +383,17 @@ Fit a probit regression model using age, gender, treatment, nep_high and the int
 
 
 ::: callout-note
+
+```{r}
+# Fit the probit regression model
+nature_model <- glm(donation_binary ~ Age + Gender + Treatment + nep_high + Treatment:nep_high, 
+             data = nature, family = binomial(link = "probit"))
+
+# Display the model summary
+tidy(nature_model)
+
+```
+
 ## Part c
 Describe the effect of watching the documentary on the likelihood of donating.
 :::
@@ -274,8 +401,69 @@ Describe the effect of watching the documentary on the likelihood of donating.
 
 
 ::: callout-note
+
+Since NATURE (T2) is the reference group in the model, the effect of watching the Nature documentary is captured by the Intercept term.
+
+Intercept: 0.2835 (p-value = 0.776)
+
+This represents the baseline probability of donating for individuals in the Nature documentary (T2) group, assuming all other variables are held constant (such as age, gender, and NEP score). The intercept value of 0.2835 suggests that for individuals in the NATURE (T2) treatment group, the likelihood of donating is approximately 28.35%.
+
+Gender: (-0.7373, p-value = 0.0173): This coefficient suggests that, controlling for other factors, being male is associated with a lower likelihood of donating. This effect is statistically significant (p-value < 0.05), meaning that males are less likely to donate compared to females in the NATURE (T2) treatment group.
+
+Age: (0.0597, p-value = 0.158): The positive coefficient for age suggests that older individuals are slightly more likely to donate, but this effect is not statistically significant (p-value = 0.158), meaning age does not have a strong effect on the likelihood of donating.
+
+NEP High: (-0.6386, p-value = 0.127): The negative coefficient for nep_high indicates that individuals with a high NEP score (indicating higher environmental concern) are less likely to donate, but this effect is also not statistically significant (p-value = 0.127).
+
+TreatmentURBAN (T1): (-0.1911, p-value = 0.637): The negative coefficient (-0.1911) suggests that individuals in the Urban documentary (T1) group are slightly less likely to donate compared to those in the Nature documentary (T2) group, but this difference is not statistically significant (p-value = 0.637). Therefore, we do not have enough evidence to conclude that the Urban documentary (T1) treatment significantly affects donation likelihood compared to the Nature documentary (T2).
+
+TreatmentURBAN (T1):nep_high: (0.1833, p-value = 0.747): The interaction term between Treatment URBAN (T1) and nep_high is also not statistically significant (p-value = 0.747), suggesting that the combined effect of being in the Urban documentary group and having a high NEP score does not significantly affect the likelihood of donating.
+
 ## Part d
 Based on the model, what is the predicted probability of donating for a 20-year old female in the treatment group with a NEP score of 3?
 :::
+
+- Intercept (\($\beta_0$)): \(0.2835\)
+- Age coefficient (\($\beta_1$)): \(0.0597\)
+- Gender coefficient (\($\beta_2$)): Since the individual is female, the gender coefficient for females is \(0\).
+- NEP high coefficient (\($\beta_3$)): Since a NEP score of 3 is not considered high, we assume \( \text{nep\_high} = 0\).
+- Treatment (NATURE (T2)): Since NATURE (T2) is the reference group, the treatment coefficient is \(0\).
+- Interaction term: Since we are in the NATURE (T2) group, the interaction term is \(0\).
+
+Now, the linear predictor (LP) is calculated as:
+
+\[
+\text{LP} = $\beta_0$ + $\beta_1$ $\cdot$ \text{age} + $\beta_2$ $\cdot$ \text{gender} + $\beta_3$ $\cdot$ \text{nep\_high}
+\]
+
+Substitute the values into the equation:
+
+\[
+\text{LP} = 0.2835 + (0.0597 $\cdot$ 20) + (-0.7373 $\cdot$ 0) + (-0.6386 $\cdot$ 0)
+\]
+
+Simplify the expression:
+
+\[
+\text{LP} = 0.2835 + 1.194 + 0
+\]
+
+\[
+\text{LP} = 1.4775
+\]
+
+Next, we convert the linear predictor to the predicted probability using the probit link:
+
+\[
+P = $\Phi$(\text{LP}) = $\Phi$(1.4775)
+\]
+
+Where \( $\Phi$ \) is the CDF of the standard normal distribution. Using the normal CDF:
+
+\[
+P $\approx$ 0.9306
+\]
+
+Thus, the predicted probability of donating for a 20-year-old female in the NATURE (T2) treatment group with a NEP score of 3 is approximately **93.06\%**.
+
 
 
