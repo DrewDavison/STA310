@@ -1,0 +1,140 @@
+---
+title: "Quiz 4"
+author: "Drew Davison"
+date: "2025-04-23"
+output: pdf_document
+---
+
+\section*{Context}
+
+In 2012, the Colorado Rockies launched \textbf{Project 5183}, a novel strategy to improve pitcher health and performance by limiting starters to 75 pitches per outing. This assignment explores that experiment using generalized linear models (GLMs) to determine the impact on pitcher performance. You'll analyze real data collected from FanGraphs and stored in \texttt{FinalRockiesdata.csv}.
+
+\section*{Objectives}
+
+\begin{itemize}
+  \item Use GLMs to model pitcher performance under a pitch limit.
+  \item Interpret and communicate the statistical significance of the pitch count limit.
+  \item Develop understanding of model assumptions and diagnostics.
+\end{itemize}
+
+\section*{Data Variables}
+
+\begin{itemize}
+  \item \texttt{PCL}: 1 if pitch count limit in effect, 0 otherwise
+  \item \texttt{ERA}: Earned runs per nine innings
+  \item \texttt{K/9}: Strikeouts per nine innings
+  \item \texttt{vFA}: Average fastball velocity
+  \item \texttt{Pitpct}: Percent of pitches that were strikes
+  \item \texttt{Age}: Age of pitcher
+  \item \texttt{Coors}: Was the game played at Coors field?
+\end{itemize}
+
+\section*{Instructions}
+
+\begin{enumerate}
+  \item Load the data into R and ensure variables are appropriately typed.
+  \item Conduct a descriptive summary comparing pre- and post-limit performances.
+  \item Fit a GLM for each of: ERA, K/9, vFA, Pitpct, using PCL, Age, and Coors as predictors.
+  \item Interpret PCL’s coefficient in each model.
+  \item Plot diagnostics and comment on model validity.
+  \item Reflect on whether Project 5183 was effective.
+\end{enumerate}
+
+\section*{Rubric}
+
+\begin{center}
+\begin{tabular}{lcccc}
+\textbf{Criteria} & Excellent (4) & Good (3) & Fair (2) & Poor (1) \\
+Clarity & Precise answers & Mostly clear & Some confusion & Vague \\
+Correctness & Fully correct & Minor errors & Multiple errors & Major errors \\
+Class Connections & Strong links to GLM topics & Some links & Weak & None \\
+Reproducibility & Runs smoothly, clear code & Mostly reproducible & Needs fixing & Not reproducible \\
+Creativity & Reflective, insightful & Some depth & Minimal insight & No insight \\
+\end{tabular}
+\end{center}
+
+\section*{Solutions}
+
+\subsection*{Load Packages and Data}
+
+```{r}
+library(tidyverse)
+rockies <- read_csv("~/STA310/Quiz 4/Quiz 4 Final/STA310/Data/FinalRockiesdata.csv", show_col_types 
+                   = FALSE)
+rockies$PCL <- as.factor(rockies$PCL)
+rockies$Coors <- as.factor(rockies$Coors)
+```
+
+
+
+\subsection*{Descriptive Summary}
+
+```{r}
+rockies %>%
+  group_by(PCL) %>%
+ summarize(across(c(ERA, "K/9", vFA, Pitpct), mean))
+```
+
+
+\textbf{Interpretation:} This summary highlights pre- and post-limit average performance. There are expected decreases in K/9 and ERA for pitchers with the pitch count in effect.
+
+\subsection*{Model 1: ERA $\sim$ PCL + Age + Coors}
+
+```{r}
+model_era <- glm(ERA ~ PCL + Age + Coors, data = rockies)
+summary(model_era)
+```
+
+
+
+\textbf{Interpretation:} A negative PCL coefficient suggests improved run prevention with the limit, thought it is not statistically significant with a p-value of .1359.
+
+\subsection*{Model 2: K.9}
+
+```{r}
+model_k9 <- glm(`K/9` ~ PCL + Age + Coors, data = rockies)
+summary(model_k9)
+```
+
+
+\textbf{Interpretation:} A drop in strikeouts would support the pitch-to-contact theory, where pitchers de-prioritize strikeouts. However, the coefficient again is not statistically significant.
+
+\subsection*{Model 3: vFA}
+
+```{r}
+model_vfa <- glm(vFA ~ PCL + Age + Coors, data = rockies)
+summary(model_vfa)
+```
+
+
+\textbf{Interpretation:} An decrease in velocity, with a statistically significant p-value, might imply pitchers are throwing softer per pitch due to de-prioritizing strikeouts with the limit. It hurts the theory that pitchers are throwing faster due to the limit.
+
+\subsection*{Model 4: Pitpct}
+
+```{r}
+model_pitpct <- glm(Pitpct ~ PCL + Age + Coors, data = rockies)
+summary(model_pitpct)
+```
+
+\textbf{Interpretation:} A rise in strike percentage would indicate better command, but the coefficient is relatively small, and it is not statistically significant.
+
+\subsection*{Model Diagnostics}
+
+```{r}
+plot(model_era)
+```
+
+
+
+
+\textbf{Diagnostics:} Residuals should be roughly normally distributed. Check for heteroscedasticity.
+
+\subsection*{Reflection}
+
+\textit{Was the pitch count limit effective? Did ERA drop? Was contact pitching successful? Consider tradeoffs.}
+
+There was little statistical significance to the coefficients that suggest the limit was effective, using measures like ERA. However, there is statistical significance to the fact the the pitchers *did* change their pitching strategy. There is more data needed to confirm if the change is strategy was successful in limiting runs.
+
+\vspace{1cm}
+\textbf{Optional Extension:} Try logistic regression if categorizing ``good'' vs ``bad'' outings.
+
